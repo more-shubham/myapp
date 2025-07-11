@@ -1,3 +1,4 @@
+'use server'
 import { prisma } from '@/lib/prisma'
 import type { Event, Order, Customer, Payment, Country } from '@prisma/client'
 

@@ -3,11 +3,30 @@
 import { Input } from '@/components/input'
 import { Listbox, ListboxLabel, ListboxOption } from '@/components/listbox'
 import { getCountries } from '@/data'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+// Define Country type based on Prisma schema
+type Country = {
+  id: number
+  name: string
+  code: string
+  flagUrl: string
+  regions: string[]
+}
 
 export function Address() {
-  let countries = getCountries()
-  let [country, setCountry] = useState(countries[0])
+  const [countries, setCountries] = useState<Country[]>([])
+  const [country, setCountry] = useState<Country | null>(null)
+  
+  useEffect(() => {
+    async function loadData() {
+      const countriesData = await getCountries()
+      setCountries(countriesData)
+      setCountry(countriesData[0])
+    }
+    
+    loadData()
+  }, [])
 
   return (
     <div className="grid grid-cols-2 gap-6">
@@ -20,7 +39,7 @@ export function Address() {
       />
       <Input aria-label="City" name="city" placeholder="City" defaultValue="Toronto" className="col-span-2" />
       <Listbox aria-label="Region" name="region" placeholder="Region" defaultValue="Ontario">
-        {country.regions.map((region) => (
+        {country?.regions?.map((region: string) => (
           <ListboxOption key={region} value={region}>
             <ListboxLabel>{region}</ListboxLabel>
           </ListboxOption>
@@ -33,13 +52,13 @@ export function Address() {
         placeholder="Country"
         by="code"
         value={country}
-        onChange={(country) => setCountry(country)}
+        onChange={(selectedCountry) => setCountry(selectedCountry as Country)}
         className="col-span-2"
       >
-        {countries.map((country) => (
-          <ListboxOption key={country.code} value={country}>
-            <img className="w-5 sm:w-4" src={country.flagUrl} alt="" />
-            <ListboxLabel>{country.name}</ListboxLabel>
+        {countries.map((countryItem) => (
+          <ListboxOption key={countryItem.code} value={countryItem}>
+            <img className="w-5 sm:w-4" src={countryItem.flagUrl} alt="" />
+            <ListboxLabel>{countryItem.name}</ListboxLabel>
           </ListboxOption>
         ))}
       </Listbox>

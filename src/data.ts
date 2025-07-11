@@ -248,6 +248,6 @@ export async function getEventOrders(id: string) {
   }))
 }
 
-export function getCountries() {
-  return dbGetCountries()
+export async function getCountries() {
+  return await dbGetCountries()
 }

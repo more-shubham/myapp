@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  date                 String
+  time                 String
+  location             String
+  totalRevenue         String
+  totalRevenueChange   String
+  ticketsAvailable     Int
+  ticketsSold          Int
+  ticketsSoldChange    String
+  pageViews            String
+  pageViewsChange      String
+  status               String
+  imgUrl               String
+  thumbUrl             String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  orders Order[]
+
+  @@map("events")
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  address      String
+  country      String
+  countryCode  String
+  flagUrl      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  orders Order[]
+
+  @@map("customers")
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  date          String
+  amountUsd     String
+  amountCad     String
+  fee           String
+  net           String
+  transactionId String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Foreign Keys
+  customerId Int
+  eventId    Int
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id])
+  event    Event    @relation(fields: [eventId], references: [id])
+  payment  Payment?
+
+  @@map("orders")
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  cardNumber String
+  cardType   String
+  cardExpiry String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Foreign Keys
+  orderId Int @unique
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+model Country {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  code    String   @unique
+  flagUrl String
+  regions String[]
+
+  @@map("countries")
+}

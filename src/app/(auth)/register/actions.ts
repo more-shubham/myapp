@@ -76,7 +76,6 @@ export async function registerUser(
     })
 
   } catch (error) {
-    console.error('Registration error:', error)
     return {
       errors: {
         _form: ['Something went wrong. Please try again.']
@@ -85,5 +84,5 @@ export async function registerUser(
   }
 
   // Redirect after successful registration (outside try-catch)
-  redirect('/login?message=Registration successful! Please log in.')
+  redirect('/login')
 }
